@@ -1,0 +1,6 @@
+{
+  "name": "WellDropp Task Manager",
+  "description": "Production-quality Task Manager with Admin and Worker Dashboards, real-time activity feeds, worker management, and detailed task reports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
