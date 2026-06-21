@@ -1,0 +1,47 @@
+{
+  "users": [
+    {
+      "id": "usr-admin",
+      "name": "Durgamani Admin",
+      "email": "durgamani@welldropp.com",
+      "password": "$2b$10$gLxfZVlKt.f59BsyEmsMz.CcNBtD.1T5l8JRjVdr1tZ/XSzggU/mK",
+      "role": "admin",
+      "isActive": true,
+      "createdAt": "2026-06-20T15:26:57.028Z",
+      "updatedAt": "2026-06-20T15:26:57.029Z"
+    },
+    {
+      "id": "usr-varun",
+      "name": "Varun",
+      "email": "varun@welldropp.com",
+      "password": "$2b$10$31zWAxZ3wsX3V.ht7BelcuviQq4RzxFJhj51XdxIXaj5RbO393Bcu",
+      "role": "worker",
+      "isActive": true,
+      "createdAt": "2026-06-20T15:26:57.177Z",
+      "updatedAt": "2026-06-20T15:26:57.177Z"
+    },
+    {
+      "id": "usr-muneeswaran",
+      "name": "Muneeswaran",
+      "email": "muneeswaran@welldropp.com",
+      "password": "$2b$10$93JTvprtdy3rfsQRqObL3ubwUxxe2lHrevm1KmpI2aJI7emH3vMG.",
+      "role": "worker",
+      "isActive": true,
+      "createdAt": "2026-06-20T15:26:57.327Z",
+      "updatedAt": "2026-06-20T15:26:57.327Z"
+    },
+    {
+      "id": "usr-siddharthan",
+      "name": "Siddharthan",
+      "email": "siddharthan@welldropp.com",
+      "password": "$2b$10$rnN0/BljUbIsIeBNRKRzwOXR4.W7QLstXnJd3QrC2QUzM6YaF0R02",
+      "role": "worker",
+      "isActive": true,
+      "createdAt": "2026-06-20T15:26:57.485Z",
+      "updatedAt": "2026-06-20T15:26:57.485Z"
+    }
+  ],
+  "tasks": [],
+  "comments": [],
+  "activityLogs": []
+}
