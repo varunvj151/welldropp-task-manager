@@ -8,30 +8,18 @@ export interface AuthenticatedRequest extends Request {
   user?: User;
 }
 
-export function authenticateJWT(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+export async function authenticateJWT(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
-
-  if (!authHeader) {
-    return res.status(401).json({ error: "Access token required" });
-  }
+  if (!authHeader) return res.status(401).json({ error: "Access token required" });
 
   const token = authHeader.split(" ")[1];
-  if (!token) {
-    return res.status(411).json({ error: "Malformed authentication token" });
-  }
+  if (!token) return res.status(411).json({ error: "Malformed authentication token" });
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as { id: string; email: string; role: string };
-    const user = usersColl.findOne({ id: decoded.id });
-
-    if (!user) {
-      return res.status(401).json({ error: "User secure session expired or user deleted" });
-    }
-
-    if (!user.isActive) {
-      return res.status(403).json({ error: "User account is disabled" });
-    }
-
+    const user = await usersColl.findOne({ id: decoded.id });
+    if (!user) return res.status(401).json({ error: "Session expired or user deleted" });
+    if (!user.is_active) return res.status(403).json({ error: "User account is disabled" });
     req.user = user;
     next();
   } catch (error) {
