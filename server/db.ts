@@ -89,16 +89,33 @@ function saveDatabase(db: DatabaseSchema) {
 let _db: DatabaseSchema = { users: [], tasks: [], comments: [], activityLogs: [] };
 
 // Firebase Firestore setup
-const CONFIG_PATH = path.join(process.cwd(), "firebase-applet-config.json");
+// Prefer individual environment variables (works on Vercel/production)
+// Falls back to reading the local config file (works in dev/AI Studio)
 let firebaseConfig: any = {};
-if (fs.existsSync(CONFIG_PATH)) {
-  try {
-    firebaseConfig = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf-8"));
-  } catch (err) {
-    console.error("Failed to parse firebase-applet-config.json:", err);
-  }
+
+if (process.env.FIREBASE_PROJECT_ID) {
+  firebaseConfig = {
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    appId: process.env.FIREBASE_APP_ID,
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    firestoreDatabaseId: process.env.FIREBASE_DATABASE_ID || "(default)",
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  };
+  console.log("Firebase config loaded from environment variables.");
 } else {
-  console.warn("Firebase configuration file not found at " + CONFIG_PATH);
+  const CONFIG_PATH = path.join(process.cwd(), "firebase-applet-config.json");
+  if (fs.existsSync(CONFIG_PATH)) {
+    try {
+      firebaseConfig = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf-8"));
+      console.log("Firebase config loaded from firebase-applet-config.json.");
+    } catch (err) {
+      console.error("Failed to parse firebase-applet-config.json:", err);
+    }
+  } else {
+    console.warn("No Firebase config found — DB will use local fallback only.");
+  }
 }
 
 const app = initializeApp(firebaseConfig);
