@@ -1,13 +1,8 @@
 {
-  "buildCommand": "vite build && esbuild api/index.cts --bundle --platform=node --format=cjs --packages=external --outfile=api/handler.cjs",
+  "buildCommand": "vite build && esbuild api/index.cts --bundle --platform=node --format=cjs --packages=external --outfile=api/handler.js",
   "outputDirectory": "dist",
-  "functions": {
-    "api/handler.cjs": {
-      "runtime": "nodejs20.x"
-    }
-  },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/handler.cjs" },
+    { "source": "/api/(.*)", "destination": "/api/handler" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
