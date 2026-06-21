@@ -175,24 +175,7 @@ export default function Login() {
             </div>
           </form>
 
-          {/* Quick references for testing */}
-          <div className="mt-8 pt-6 border-t border-slate-100">
-            <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2.5">
-              Available Test Passwords
-            </h3>
-            <div className="grid grid-cols-2 gap-2 text-[10px] text-slate-500 leading-relaxed font-mono">
-              <div className="p-1.5 bg-slate-50 rounded-lg border border-slate-150">
-                <strong className="text-slate-700 block text-[9px] uppercase font-bold">Admin</strong>
-                durgamani@welldropp.com<br />
-                pwd: <span className="font-bold underline text-slate-600">durgamani123</span>
-              </div>
-              <div className="p-1.5 bg-slate-50 rounded-lg border border-slate-150 block truncate">
-                <strong className="text-slate-700 block text-[9px] uppercase font-bold">Worker</strong>
-                varun@welldropp.com<br />
-                pwd: <span className="font-bold underline text-slate-600">varun123</span>
-              </div>
-            </div>
-          </div>
+
 
         </motion.div>
       </div>
