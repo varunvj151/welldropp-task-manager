@@ -19,8 +19,6 @@ import {
   Moon
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
-// @ts-ignore
-import logoImg from "../assets/images/logo_1781876381313.jpg";
 import InstallBanner from "../components/InstallBanner";
 
 interface SidebarItem {
@@ -99,12 +97,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Header (fixed) */}
         <div className="p-6 flex items-center justify-between gap-3 flex-shrink-0 border-b border-slate-800/50">
           <div className="flex items-center gap-3 overflow-hidden">
-            <img
-              src={logoImg}
-              alt="WellDropp Logo"
-              className="w-8 h-8 rounded-lg shrink-0 object-contain"
-              referrerPolicy="no-referrer"
-            />
             {!sidebarCollapsed && (
               <span className="text-xl font-bold text-white tracking-tight truncate">WellDropp</span>
             )}
@@ -188,12 +180,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             >
               <div className="p-6 flex items-center justify-between border-b border-slate-800 flex-shrink-0">
                 <div className="flex items-center gap-2">
-                  <img
-                    src={logoImg}
-                    alt="WellDropp Logo"
-                    className="w-8 h-8 rounded-lg shrink-0 object-contain"
-                    referrerPolicy="no-referrer"
-                  />
                   <span className="text-xl font-bold text-white tracking-tight">WellDropp</span>
                   <button
                     onClick={toggleTheme}

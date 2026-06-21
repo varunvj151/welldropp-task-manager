@@ -4,8 +4,6 @@ import { useAuth } from "../context/AuthContext";
 import { useToast } from "../components/Toast";
 import { motion } from "motion/react";
 import { LogIn, Lock, Mail, ServerCrash, Briefcase } from "lucide-react";
-// @ts-ignore
-import logoImg from "../assets/images/logo_1781876381313.jpg";
 
 export default function Login() {
   const { login, user, loading } = useAuth();
@@ -70,18 +68,10 @@ export default function Login() {
     <div className="min-h-screen bg-slate-900 flex flex-col justify-center sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
 
-        {/* Brand Logo */}
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <img
-            src={logoImg}
-            alt="WellDropp Logo"
-            className="w-12 h-12 rounded-xl object-contain"
-            referrerPolicy="no-referrer"
-          />
-          <div className="flex flex-col text-left">
-            <span className="font-bold tracking-tight text-xl text-white">WellDropp</span>
-            <span className="text-xs text-indigo-400 font-semibold tracking-wider uppercase">Task Management Suite</span>
-          </div>
+        {/* Brand */}
+        <div className="flex flex-col items-center justify-center mb-6">
+          <span className="font-bold tracking-tight text-2xl text-white">WellDropp</span>
+          <span className="text-xs text-indigo-400 font-semibold tracking-wider uppercase mt-1">Task Management Suite</span>
         </div>
 
         {/* Outer Frame */}
