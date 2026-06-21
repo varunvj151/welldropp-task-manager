@@ -119,9 +119,15 @@ if (process.env.FIREBASE_PROJECT_ID) {
   }
 }
 
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-const dbId = process.env.FIREBASE_DATABASE_ID || firebaseConfig.firestoreDatabaseId || "(default)";
-const firestore = getFirestore(app, dbId);
+let firestore: any = null;
+try {
+  const fbApp = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+  const dbId = process.env.FIREBASE_DATABASE_ID || firebaseConfig.firestoreDatabaseId || "(default)";
+  firestore = getFirestore(fbApp, dbId);
+  console.log("Firestore initialized, dbId:", dbId);
+} catch (err) {
+  console.error("Failed to initialize Firebase:", err);
+}
 
 // Seed Database helper (direct write to firestore + local update)
 async function seedIfEmpty() {
@@ -180,7 +186,7 @@ async function seedIfEmpty() {
       _db.users.push(newUser);
       
       try {
-        await setDoc(doc(firestore, "users", newUser.id), newUser);
+        if (firestore) await setDoc(doc(firestore, "users", newUser.id), newUser);
       } catch (err) {
         console.error(`Failed to write seeded user ${newUser.name} to Firestore:`, err);
       }
@@ -193,6 +199,11 @@ async function seedIfEmpty() {
 
 // Global initialization function called by the Express server on startup
 export async function initializeDbFromFirebase() {
+  if (!firestore) {
+    console.warn("Firestore not initialized — using in-memory/seeded data.");
+    await seedIfEmpty();
+    return;
+  }
   try {
     console.log("Initializing database from Firestore...");
     
@@ -315,7 +326,7 @@ export const usersColl = {
     saveDatabase(_db);
 
     // Save asynchronously to cloud Firestore
-    setDoc(doc(firestore, "users", newUser.id), newUser).catch((err) => {
+    if (firestore) setDoc(doc(firestore, "users", newUser.id), newUser).catch((err) => {
       console.error(`Failed to write created user ${newUser.id} to Firestore:`, err);
     });
 
@@ -342,7 +353,7 @@ export const usersColl = {
     saveDatabase(_db);
 
     // Save asynchronously to cloud Firestore
-    setDoc(doc(firestore, "users", id), updatedUser).catch((err) => {
+    if (firestore) setDoc(doc(firestore, "users", id), updatedUser).catch((err) => {
       console.error(`Failed to write updated user ${id} to Firestore:`, err);
     });
 
@@ -359,14 +370,14 @@ export const usersColl = {
       const updatedUser = _db.users[uIndex];
       saveDatabase(_db);
 
-      setDoc(doc(firestore, "users", id), updatedUser).catch((err) => {
+      if (firestore) setDoc(doc(firestore, "users", id), updatedUser).catch((err) => {
         console.error(`Failed to update soft-deleted user ${id} in Firestore:`, err);
       });
     } else {
       _db.users.splice(uIndex, 1);
       saveDatabase(_db);
 
-      deleteDoc(doc(firestore, "users", id)).catch((err) => {
+      if (firestore) deleteDoc(doc(firestore, "users", id)).catch((err) => {
         console.error(`Failed to hard-delete user ${id} in Firestore:`, err);
       });
     }
@@ -406,7 +417,7 @@ export const tasksColl = {
     saveDatabase(_db);
 
     // Save asynchronously to cloud Firestore
-    setDoc(doc(firestore, "tasks", newTask.id), newTask).catch((err) => {
+    if (firestore) setDoc(doc(firestore, "tasks", newTask.id), newTask).catch((err) => {
       console.error(`Failed to write created task ${newTask.id} to Firestore:`, err);
     });
 
@@ -428,7 +439,7 @@ export const tasksColl = {
     saveDatabase(_db);
 
     // Save asynchronously to cloud Firestore
-    setDoc(doc(firestore, "tasks", id), updatedTask).catch((err) => {
+    if (firestore) setDoc(doc(firestore, "tasks", id), updatedTask).catch((err) => {
       console.error(`Failed to write updated task ${id} to Firestore:`, err);
     });
 
@@ -443,7 +454,7 @@ export const tasksColl = {
     saveDatabase(_db);
 
     // Delete asynchronously from cloud Firestore
-    deleteDoc(doc(firestore, "tasks", id)).catch((err) => {
+    if (firestore) deleteDoc(doc(firestore, "tasks", id)).catch((err) => {
       console.error(`Failed to delete task ${id} from Firestore:`, err);
     });
 
@@ -473,7 +484,7 @@ export const commentsColl = {
     saveDatabase(_db);
 
     // Save asynchronously to cloud Firestore
-    setDoc(doc(firestore, "comments", newComment.id), newComment).catch((err) => {
+    if (firestore) setDoc(doc(firestore, "comments", newComment.id), newComment).catch((err) => {
       console.error(`Failed to write comment ${newComment.id} to Firestore:`, err);
     });
 
@@ -503,7 +514,7 @@ export const logsColl = {
     saveDatabase(_db);
 
     // Save asynchronously to cloud Firestore
-    setDoc(doc(firestore, "activityLogs", newLog.id), newLog).catch((err) => {
+    if (firestore) setDoc(doc(firestore, "activityLogs", newLog.id), newLog).catch((err) => {
       console.error(`Failed to write activity log ${newLog.id} to Firestore:`, err);
     });
 
