@@ -197,6 +197,14 @@ async function seedIfEmpty() {
   }
 }
 
+// Helper: fetch with timeout so Firestore doesn't hang cold starts
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`Firestore timeout after ${ms}ms`)), ms))
+  ]);
+}
+
 // Global initialization function called by the Express server on startup
 export async function initializeDbFromFirebase() {
   if (!firestore) {
@@ -208,28 +216,28 @@ export async function initializeDbFromFirebase() {
     console.log("Initializing database from Firestore...");
     
     // 1. Fetch Users
-    const usersSnapshot = await getDocs(collection(firestore, "users"));
+    const usersSnapshot = await withTimeout(getDocs(collection(firestore, "users")), 5000);
     _db.users = [];
     usersSnapshot.forEach((docSnap) => {
       _db.users.push(docSnap.data() as User);
     });
 
     // 2. Fetch Tasks
-    const tasksSnapshot = await getDocs(collection(firestore, "tasks"));
+    const tasksSnapshot = await withTimeout(getDocs(collection(firestore, "tasks")), 5000);
     _db.tasks = [];
     tasksSnapshot.forEach((docSnap) => {
       _db.tasks.push(docSnap.data() as Task);
     });
 
     // 3. Fetch Comments
-    const commentsSnapshot = await getDocs(collection(firestore, "comments"));
+    const commentsSnapshot = await withTimeout(getDocs(collection(firestore, "comments")), 5000);
     _db.comments = [];
     commentsSnapshot.forEach((docSnap) => {
       _db.comments.push(docSnap.data() as Comment);
     });
 
     // 4. Fetch Activity Logs
-    const logsSnapshot = await getDocs(collection(firestore, "activityLogs"));
+    const logsSnapshot = await withTimeout(getDocs(collection(firestore, "activityLogs")), 5000);
     _db.activityLogs = [];
     logsSnapshot.forEach((docSnap) => {
       _db.activityLogs.push(docSnap.data() as ActivityLog);
