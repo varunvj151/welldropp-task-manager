@@ -75,7 +75,7 @@ export default function Login() {
           <img
             src={logoImg}
             alt="WellDropp Logo"
-            className="w-10 h-10 rounded-xl object-cover shadow-lg shadow-indigo-500/20"
+            className="w-12 h-12 rounded-xl object-contain"
             referrerPolicy="no-referrer"
           />
           <div className="flex flex-col text-left">

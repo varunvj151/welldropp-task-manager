@@ -100,7 +100,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <img
               src={logoImg}
               alt="WellDropp Logo"
-              className="w-8 h-8 rounded-lg shrink-0 object-cover"
+              className="w-8 h-8 rounded-lg shrink-0 object-contain"
               referrerPolicy="no-referrer"
             />
             {!sidebarCollapsed && (
@@ -189,7 +189,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <img
                     src={logoImg}
                     alt="WellDropp Logo"
-                    className="w-8 h-8 rounded-lg shrink-0 object-cover"
+                    className="w-8 h-8 rounded-lg shrink-0 object-contain"
                     referrerPolicy="no-referrer"
                   />
                   <span className="text-xl font-bold text-white tracking-tight">WellDropp</span>
