@@ -6,7 +6,3 @@ coverage/
 *.log
 .env*
 !.env.example
-api/handler.js
-api/handler.cjs
-api/index.js
-api/index.cjs

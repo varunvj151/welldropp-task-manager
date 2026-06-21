@@ -376,4 +376,4 @@ app.get("/api/reports", authenticateJWT, authorizeAdmin, (req, res) => {
   });
 });
 
-module.exports = app;
+export default app;
