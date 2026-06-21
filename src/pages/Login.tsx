@@ -5,8 +5,7 @@ import { useToast } from "../components/Toast";
 import { motion } from "motion/react";
 import { LogIn, Lock, Mail, ServerCrash, Briefcase } from "lucide-react";
 // @ts-ignore
-// @ts-ignore
-import logoImg from "../assets/images/welldropp_logo.png";
+import logoImg from "../assets/images/logo_1781876381313.jpg";
 
 export default function Login() {
   const { login, user, loading } = useAuth();

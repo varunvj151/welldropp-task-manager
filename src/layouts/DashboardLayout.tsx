@@ -20,8 +20,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 // @ts-ignore
-import logoImg from "../assets/images/welldropp_logo.png";
-import InstallBanner from "../components/InstallBanner";
+import logoImg from "../assets/images/logo_1781876381313.jpg";
 
 interface SidebarItem {
   name: string;
@@ -317,9 +316,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {children}
         </main>
       </div>
-
-      {/* PWA Install Banner */}
-      <InstallBanner />
     </div>
   );
 }
