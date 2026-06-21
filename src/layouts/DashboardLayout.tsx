@@ -92,6 +92,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const currentPath = location.pathname;
 
   return (
+    <>
     <div className="h-[100dvh] w-full bg-slate-50 dark:bg-slate-950 flex overflow-hidden">
       {/* --- DESKTOP SIDEBAR --- */}
       <aside className={`hidden md:flex flex-col bg-slate-900 text-slate-100 flex-shrink-0 h-full transition-all duration-300 ${sidebarCollapsed ? "w-20" : "w-64"}`}>
@@ -316,6 +317,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
     </div>
     <InstallBanner />
+    </>
   );
 }
 
