@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 // @ts-ignore
-import logoImg from "../assets/images/logo_1781876381313.jpg";
+import logoImg from "../assets/images/welldropp_logo.png";
 import InstallBanner from "../components/InstallBanner";
 
 interface SidebarItem {
