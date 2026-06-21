@@ -1,6 +1,8 @@
 import fs from "fs";
 import path from "path";
 import bcryptjs from "bcryptjs";
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, doc, getDocs, setDoc, deleteDoc } from "firebase/firestore";
 
 // Types
 export interface User {
@@ -76,18 +78,37 @@ function loadDatabase(): DatabaseSchema {
 
 function saveDatabase(db: DatabaseSchema) {
   ensureDbDirectory();
-  fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), "utf-8");
+  try {
+    fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), "utf-8");
+  } catch (err) {
+    console.error("Failed to write offline backup db file", err);
+  }
 }
 
-// Instantiate/load DB
-let _db = loadDatabase();
+// Instantiate/load in-memory db with a fallback cache
+let _db: DatabaseSchema = { users: [], tasks: [], comments: [], activityLogs: [] };
 
-// Seed Database
-function seedIfEmpty() {
-  let modified = false;
+// Firebase Firestore setup
+const CONFIG_PATH = path.join(process.cwd(), "firebase-applet-config.json");
+let firebaseConfig: any = {};
+if (fs.existsSync(CONFIG_PATH)) {
+  try {
+    firebaseConfig = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf-8"));
+  } catch (err) {
+    console.error("Failed to parse firebase-applet-config.json:", err);
+  }
+} else {
+  console.warn("Firebase configuration file not found at " + CONFIG_PATH);
+}
 
+const app = initializeApp(firebaseConfig);
+const dbId = firebaseConfig.firestoreDatabaseId || "(default)";
+const firestore = getFirestore(app, dbId);
+
+// Seed Database helper (direct write to firestore + local update)
+async function seedIfEmpty() {
   if (_db.users.length === 0) {
-    console.log("Database contains no users. Seeding default Admin and Workers...");
+    console.log("Database contains no users. Seeding default Admin and Workers in Firestore...");
     
     const defaultUsers = [
       {
@@ -127,7 +148,7 @@ function seedIfEmpty() {
     for (const u of defaultUsers) {
       const salt = bcryptjs.genSaltSync(10);
       const hashedPassword = bcryptjs.hashSync(u.passwordRaw, salt);
-      _db.users.push({
+      const newUser: User = {
         id: u.id,
         name: u.name,
         email: u.email,
@@ -136,18 +157,105 @@ function seedIfEmpty() {
         isActive: u.isActive,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      });
+      };
+      
+      _db.users.push(newUser);
+      
+      try {
+        await setDoc(doc(firestore, "users", newUser.id), newUser);
+      } catch (err) {
+        console.error(`Failed to write seeded user ${newUser.name} to Firestore:`, err);
+      }
     }
-    modified = true;
-  }
-
-  if (modified) {
+    
     saveDatabase(_db);
-    console.log("Database seeded successfully.");
+    console.log("Firestore database seeded successfully.");
   }
 }
 
-seedIfEmpty();
+// Global initialization function called by the Express server on startup
+export async function initializeDbFromFirebase() {
+  try {
+    console.log("Initializing database from Firestore...");
+    
+    // 1. Fetch Users
+    const usersSnapshot = await getDocs(collection(firestore, "users"));
+    _db.users = [];
+    usersSnapshot.forEach((docSnap) => {
+      _db.users.push(docSnap.data() as User);
+    });
+
+    // 2. Fetch Tasks
+    const tasksSnapshot = await getDocs(collection(firestore, "tasks"));
+    _db.tasks = [];
+    tasksSnapshot.forEach((docSnap) => {
+      _db.tasks.push(docSnap.data() as Task);
+    });
+
+    // 3. Fetch Comments
+    const commentsSnapshot = await getDocs(collection(firestore, "comments"));
+    _db.comments = [];
+    commentsSnapshot.forEach((docSnap) => {
+      _db.comments.push(docSnap.data() as Comment);
+    });
+
+    // 4. Fetch Activity Logs
+    const logsSnapshot = await getDocs(collection(firestore, "activityLogs"));
+    _db.activityLogs = [];
+    logsSnapshot.forEach((docSnap) => {
+      _db.activityLogs.push(docSnap.data() as ActivityLog);
+    });
+
+    console.log(`Synced from Firestore: ${_db.users.length} users, ${_db.tasks.length} tasks, ${_db.comments.length} comments, ${_db.activityLogs.length} activityLogs.`);
+
+    // If no users in Firestore, trigger database seed
+    if (_db.users.length === 0) {
+      await seedIfEmpty();
+    } else {
+      // Save localized backup cache
+      saveDatabase(_db);
+    }
+  } catch (err) {
+    console.error("Error connecting or fetching from Firestore, falling back to local DB cache:", err);
+    _db = loadDatabase();
+    if (_db.users.length === 0) {
+      // Simple synchronous fallback seeder
+      const defaultUsers = [
+        {
+          id: "usr-admin",
+          name: "Durgamani Admin",
+          email: "durgamani@welldropp.com",
+          passwordRaw: "durgamani123",
+          role: "admin" as const,
+          isActive: true,
+        },
+        {
+          id: "usr-varun",
+          name: "Varun",
+          email: "varun@welldropp.com",
+          passwordRaw: "varun123",
+          role: "worker" as const,
+          isActive: true,
+        },
+      ];
+      for (const u of defaultUsers) {
+        const salt = bcryptjs.genSaltSync(10);
+        const hashedPassword = bcryptjs.hashSync(u.passwordRaw, salt);
+        _db.users.push({
+          id: u.id,
+          name: u.name,
+          email: u.email,
+          password: hashedPassword,
+          role: u.role,
+          isActive: u.isActive,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+      }
+      saveDatabase(_db);
+    }
+  }
+}
 
 // User Operations
 export const usersColl = {
@@ -187,6 +295,12 @@ export const usersColl = {
 
     _db.users.push(newUser);
     saveDatabase(_db);
+
+    // Save asynchronously to cloud Firestore
+    setDoc(doc(firestore, "users", newUser.id), newUser).catch((err) => {
+      console.error(`Failed to write created user ${newUser.id} to Firestore:`, err);
+    });
+
     return newUser;
   },
 
@@ -208,6 +322,12 @@ export const usersColl = {
     updatedUser.updatedAt = new Date().toISOString();
     _db.users[uIndex] = updatedUser;
     saveDatabase(_db);
+
+    // Save asynchronously to cloud Firestore
+    setDoc(doc(firestore, "users", id), updatedUser).catch((err) => {
+      console.error(`Failed to write updated user ${id} to Firestore:`, err);
+    });
+
     return updatedUser;
   },
 
@@ -216,14 +336,22 @@ export const usersColl = {
     if (uIndex === -1) return false;
 
     if (soft) {
-      // Soft delete: flag them inactive or we can actually remove them. The prompt says: "Soft delete preferred" for workers.
-      // Let's set isActive to false and flag as soft-deleted to keep their assigned tasks intact in dashboard reports.
       _db.users[uIndex].isActive = false;
       _db.users[uIndex].updatedAt = new Date().toISOString();
+      const updatedUser = _db.users[uIndex];
+      saveDatabase(_db);
+
+      setDoc(doc(firestore, "users", id), updatedUser).catch((err) => {
+        console.error(`Failed to update soft-deleted user ${id} in Firestore:`, err);
+      });
     } else {
       _db.users.splice(uIndex, 1);
+      saveDatabase(_db);
+
+      deleteDoc(doc(firestore, "users", id)).catch((err) => {
+        console.error(`Failed to hard-delete user ${id} in Firestore:`, err);
+      });
     }
-    saveDatabase(_db);
     return true;
   },
 };
@@ -258,6 +386,12 @@ export const tasksColl = {
     };
     _db.tasks.push(newTask);
     saveDatabase(_db);
+
+    // Save asynchronously to cloud Firestore
+    setDoc(doc(firestore, "tasks", newTask.id), newTask).catch((err) => {
+      console.error(`Failed to write created task ${newTask.id} to Firestore:`, err);
+    });
+
     return newTask;
   },
 
@@ -274,6 +408,12 @@ export const tasksColl = {
 
     _db.tasks[tIndex] = updatedTask;
     saveDatabase(_db);
+
+    // Save asynchronously to cloud Firestore
+    setDoc(doc(firestore, "tasks", id), updatedTask).catch((err) => {
+      console.error(`Failed to write updated task ${id} to Firestore:`, err);
+    });
+
     return updatedTask;
   },
 
@@ -283,6 +423,12 @@ export const tasksColl = {
 
     _db.tasks.splice(tIndex, 1);
     saveDatabase(_db);
+
+    // Delete asynchronously from cloud Firestore
+    deleteDoc(doc(firestore, "tasks", id)).catch((err) => {
+      console.error(`Failed to delete task ${id} from Firestore:`, err);
+    });
+
     return true;
   },
 };
@@ -307,6 +453,12 @@ export const commentsColl = {
     };
     _db.comments.push(newComment);
     saveDatabase(_db);
+
+    // Save asynchronously to cloud Firestore
+    setDoc(doc(firestore, "comments", newComment.id), newComment).catch((err) => {
+      console.error(`Failed to write comment ${newComment.id} to Firestore:`, err);
+    });
+
     return newComment;
   },
 };
@@ -331,6 +483,12 @@ export const logsColl = {
     };
     _db.activityLogs.push(newLog);
     saveDatabase(_db);
+
+    // Save asynchronously to cloud Firestore
+    setDoc(doc(firestore, "activityLogs", newLog.id), newLog).catch((err) => {
+      console.error(`Failed to write activity log ${newLog.id} to Firestore:`, err);
+    });
+
     return newLog;
   },
 };

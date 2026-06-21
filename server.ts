@@ -13,7 +13,8 @@ import {
   commentsColl,
   logsColl,
   User,
-  Task
+  Task,
+  initializeDbFromFirebase
 } from "./server/db";
 import {
   authenticateJWT,
@@ -25,6 +26,9 @@ const JWT_SECRET = process.env.JWT_SECRET || "welldropp_task_manager_secret_key_
 const PORT = 3000;
 
 async function startServer() {
+  // Initialize Cloud Firestore Connection
+  await initializeDbFromFirebase();
+
   const app = express();
 
   // Middleware
