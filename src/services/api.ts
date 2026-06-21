@@ -24,8 +24,18 @@ api.interceptors.request.use(
 
 // Graceful global error handler helper
 export function extractErrorMessage(error: any): string {
-  if (error.response && error.response.data && error.response.data.error) {
-    return error.response.data.error;
+  if (error.response && error.response.data) {
+    const data = error.response.data;
+    if (data.error) {
+      if (typeof data.error === "string") return data.error;
+      if (typeof data.error === "object") {
+        if (data.error.message && typeof data.error.message === "string") return data.error.message;
+        return JSON.stringify(data.error);
+      }
+    }
+    if (data.message && typeof data.message === "string") {
+      return data.message;
+    }
   }
   return error.message || "An unexpected error occurred. Please try again.";
 }
