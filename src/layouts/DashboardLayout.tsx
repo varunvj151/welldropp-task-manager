@@ -21,6 +21,7 @@ import {
 import { useTheme } from "../context/ThemeContext";
 // @ts-ignore
 import logoImg from "../assets/images/logo_1781876381313.jpg";
+import InstallBanner from "../components/InstallBanner";
 
 interface SidebarItem {
   name: string;
@@ -314,6 +315,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </main>
       </div>
     </div>
+    <InstallBanner />
   );
 }
 
