@@ -41,9 +41,9 @@ export default function Login() {
     try {
       setSubmitting(true);
       const authenticatedUser = await login(emailTrimmed, password);
-      
+
       toast.success(`Welcome back, ${authenticatedUser.name}!`);
-      
+
       if (authenticatedUser.role === "admin") {
         navigate("/admin/dashboard");
       } else {
@@ -69,7 +69,7 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col justify-center sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        
+
         {/* Brand Logo */}
         <div className="flex items-center justify-center gap-3 mb-6">
           <img
@@ -183,12 +183,12 @@ export default function Login() {
             <div className="grid grid-cols-2 gap-2 text-[10px] text-slate-500 leading-relaxed font-mono">
               <div className="p-1.5 bg-slate-50 rounded-lg border border-slate-150">
                 <strong className="text-slate-700 block text-[9px] uppercase font-bold">Admin</strong>
-                durgamani@welldropp.com<br/>
+                durgamani@welldropp.com<br />
                 pwd: <span className="font-bold underline text-slate-600">durgamani123</span>
               </div>
               <div className="p-1.5 bg-slate-50 rounded-lg border border-slate-150 block truncate">
                 <strong className="text-slate-700 block text-[9px] uppercase font-bold">Worker</strong>
-                varun@welldropp.com<br/>
+                varun@welldropp.com<br />
                 pwd: <span className="font-bold underline text-slate-600">varun123</span>
               </div>
             </div>

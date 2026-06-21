@@ -124,11 +124,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isActive
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive
                     ? "bg-indigo-600 text-white font-semibold shadow-sm"
                     : "text-slate-400 hover:text-white hover:bg-slate-800"
-                } ${sidebarCollapsed ? "justify-center px-0" : ""}`}
+                  } ${sidebarCollapsed ? "justify-center px-0" : ""}`}
                 title={sidebarCollapsed ? item.name : undefined}
               >
                 <item.icon className="w-5 h-5 flex-shrink-0" />
@@ -155,9 +154,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
           <button
             onClick={handleLogout}
-            className={`mt-2 w-full flex items-center gap-3 py-1.5 text-xs font-semibold rounded-lg text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors cursor-pointer ${
-              sidebarCollapsed ? "justify-center px-0" : "px-2"
-            }`}
+            className={`mt-2 w-full flex items-center gap-3 py-1.5 text-xs font-semibold rounded-lg text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors cursor-pointer ${sidebarCollapsed ? "justify-center px-0" : "px-2"
+              }`}
             title={sidebarCollapsed ? "Logout Session" : undefined}
           >
             <LogOut className="w-4.5 h-4.5 flex-shrink-0" />
@@ -226,11 +224,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       key={item.path}
                       to={item.path}
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                        isActive
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive
                           ? "bg-indigo-600 text-white font-semibold"
                           : "text-slate-400 hover:text-white hover:bg-slate-800"
-                      }`}
+                        }`}
                     >
                       <item.icon className="w-5 h-5 flex-shrink-0" />
                       <span>{item.name}</span>
