@@ -23,7 +23,7 @@ import {
 } from "./server/authMiddleware";
 
 const JWT_SECRET = process.env.JWT_SECRET || "welldropp_task_manager_secret_key_123";
-const PORT = 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3005;
 
 async function startServer() {
   // Initialize Cloud Firestore Connection
