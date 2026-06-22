@@ -3,8 +3,8 @@ import cors from "cors";
 import helmet from "helmet";
 import jwt from "jsonwebtoken";
 import bcryptjs from "bcryptjs";
-import { usersColl, tasksColl, commentsColl, logsColl, initializeDbFromSupabase } from "../server/db";
-import { authenticateJWT, authorizeAdmin, AuthenticatedRequest } from "../server/authMiddleware";
+import { usersColl, tasksColl, commentsColl, logsColl, initializeDbFromSupabase } from "../server/db.js";
+import { authenticateJWT, authorizeAdmin, AuthenticatedRequest } from "../server/authMiddleware.js";
 
 
 // Map snake_case DB fields → camelCase for frontend compatibility

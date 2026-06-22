@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { usersColl, User } from "./db";
+import { usersColl, User } from "./db.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "welldropp_task_manager_secret_key_123";
 

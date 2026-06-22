@@ -1,6 +1,6 @@
 import { createServer as createViteServer } from "vite";
-import { initializeDbFromSupabase } from "./server/db";
-import app from "./api/handler";
+import { initializeDbFromSupabase } from "./server/db.js";
+import app from "./api/handler.js";
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3005;
 
